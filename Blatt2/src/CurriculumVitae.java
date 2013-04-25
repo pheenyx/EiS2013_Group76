@@ -112,10 +112,10 @@ public class CurriculumVitae {
      * @return new replaced string
      */
     public static String convertUmlaut(final String s) {
-        String newS = s.replaceAll("ä", "\\\\\"a").replaceAll("ü", "\\\\\"u")
-                .replaceAll("ö", "\\\\\"o").replaceAll("ß", "\\\\ss ")
-                .replaceAll("Ä", "\\\\\"A").replaceAll("Ö", "\\\\\"O")
-                .replaceAll("Ü", "\\\\\"U");
+        String newS = s.replaceAll("Ã¤", "\\\\\"a").replaceAll("Ã¼", "\\\\\"u")
+                .replaceAll("Ã¶", "\\\\\"o").replaceAll("ÃŸ", "\\\\ss ")
+                .replaceAll("Ã„", "\\\\\"A").replaceAll("Ã–", "\\\\\"O")
+                .replaceAll("Ãœ", "\\\\\"U");
         return newS;
     }
 
@@ -241,14 +241,14 @@ public class CurriculumVitae {
      *            commandline arguments
      */
     public static void main(final String[] args) {
-        String s = "Hallo ich bin ein Umlaut ä und ich heiße Ä und das"
-                + " sind meine Freunde ÄÜÖßäöü bla.";
+        String s = "Hallo ich bin ein Umlaut Ã¤ und ich heiÃŸe Ã„ und das"
+                + " sind meine Freunde Ã¶Ã¤Ã¼ÃŸÃ„Ã–Ãœ bla.";
         System.out.println(convertUmlaut(s));
 
         CurriculumVitae cv = new CurriculumVitae();
         cv.setFirstname("Kermit");
         cv.setLastname("the Frog");
-        cv.setPicturePath("c:\\lucid.log");
+        cv.setPicturePath("kermit.jpg");
         cv.setTelephone("+49 21321 546546");
         cv.setEmail("kermit@muppets.com");
 

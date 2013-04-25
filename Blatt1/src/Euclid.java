@@ -9,7 +9,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
 /**
- * Calculates the greatest common divisor of two integers in two differnt ways.
+ * Calculates the greatest common divisor of two integers in two different ways.
  * 1. by subtraction and 2. by division (mod)
  *
  * @author Michael Mardaus
@@ -21,7 +21,7 @@ class Euclid {
      * The main function.
      *
      * @param args
-     *            commandline arguments
+     *            command line arguments
      */
     public static void main(final String[] args) {
 

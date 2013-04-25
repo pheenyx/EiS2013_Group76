@@ -1,0 +1,40 @@
+Die Modulo methode ist mindestens gleich schnell wie die minus methode.
+In den meinsten Faellen aber wesendlich schneller. (vgl. Ausgaben des Programms 
+unter Steps und Time)
+
+Gerade bei nahe beieinander liegenden Zahlen wie etwa 100 und 98 wird der Unterschied deutlich
+Minus muss hier immer wieder die Differenz 2 abziehen und braucht daher 50 steps.
+Modulo bekommt die 2 quasi direkt geliefert und braucht nur 3 steps bis zur Ausgabe.
+
+Fuer die Beispiele arbeiten beide gleich schnell in 29 steps, da die Zahlen so gewaehlt sind,
+dass Modulus und Differenz gleich sind in jedem Schritt.
+Modulo                             Minus
+p = 832040, q = 514229             p = 832040, q = 514229
+p = 514229, q = 317811             p = 317811, q = 514229
+p = 317811, q = 196418             p = 196418, q = 317811
+p = 196418, q = 121393             p = 121393, q = 196418
+p = 121393, q = 75025              p = 75025, q = 121393 
+p = 75025, q = 46368               p = 46368, q = 75025  
+p = 46368, q = 28657               p = 28657, q = 46368  
+p = 28657, q = 17711               p = 17711, q = 28657  
+p = 17711, q = 10946               p = 10946, q = 17711  
+p = 10946, q = 6765                p = 6765, q = 10946   
+p = 6765, q = 4181                 p = 4181, q = 6765    
+p = 4181, q = 2584                 p = 2584, q = 4181    
+p = 2584, q = 1597                 p = 1597, q = 2584    
+p = 1597, q = 987                  p = 987, q = 1597     
+p = 987, q = 610                   p = 610, q = 987      
+p = 610, q = 377                   p = 377, q = 610      
+p = 377, q = 233                   p = 233, q = 377      
+p = 233, q = 144                   p = 144, q = 233      
+p = 144, q = 89                    p = 89, q = 144       
+p = 89, q = 55                     p = 55, q = 89        
+p = 55, q = 34                     p = 34, q = 55        
+p = 34, q = 21                     p = 21, q = 34        
+p = 21, q = 13                     p = 13, q = 21        
+p = 13, q = 8                      p = 8, q = 13         
+p = 8, q = 5                       p = 5, q = 8          
+p = 5, q = 3                       p = 3, q = 5          
+p = 3, q = 2                       p = 2, q = 3          
+p = 2, q = 1                       p = 1, q = 2          
+p = 1, q = 0                       p = 1, q = 1          

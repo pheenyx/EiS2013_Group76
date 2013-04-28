@@ -1,0 +1,14 @@
+Blatt 1 - Aufgabe 1
+Gruppe 76
+
+a) 								           8/8
+b)                                                                         2/2 
+c)                                                                         2/2
+d) 								           5/5
+e)                                                                         3/3
+-------------------------------------------------------------------------------
+Gesamt:                                                                   20/20
+
+Bemerkung: Sehr schöne Abgabe, auch Coding Conventions und Javadocs wurden 
+           berücksichtigt :) Nette kleine Zusatzarbeit mit den Laufzeit-
+           berechnungen.

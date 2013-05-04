@@ -1,0 +1,10 @@
+Blatt 2 - Aufgabe 1
+Gruppe 74
+
+a) Die Methode createPersonalData() wirft eine Exception falls kein Bild gegeben wurde, statt die Zeile       11 / 12 
+   für das Bild zu ignorieren. -1
+b) Fehlende Befehl in .tex Ausgabe verhindern das Compilieren zur PDF-Datei -1				       4 / 5
+c) PDF - Datei wurde nicht erzeugt. -1 									       2 / 3
+______________________________________________________________________________________________________________________
+
+													      17 / 20

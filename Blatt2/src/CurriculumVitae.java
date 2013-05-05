@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.RandomAccessFile;
 
 /**
  * Exports a .TeX file of a basic CV with very little information about the
@@ -235,6 +236,52 @@ public class CurriculumVitae {
     }
 
     /**
+     * Writes curriculum vitae to file.
+     * File must be writeable and have a .tex file extension.
+     * @param path 
+     * 		full path to file including file name
+     * @throws InvalidFileException 
+     * 		if file at path is not writeable or not a .tex file
+     */
+    public static void writeCV(final String path) throws InvalidFileException {
+        File file = new File(path);
+	if (!(file.getName().matches("(\\w)*\\.tex")))
+	    throw new InvalidFileException("File is not a .tex file.");
+	if (file.getParent() == "null")
+	    if (!(new File(".")).canWrite())
+	        throw new InvalidFileException("Cannot write to destination "
+		    + "directory (.).");
+	else if (!((new File(file.getParent()).canWrite())))
+	    throw new InvalidFileException("Cannot write to destination "
+	        + "directory (" + file.getParent() + ").");
+        RandomAccessFile rafile = null;
+	try {
+	    rafile = new RandomAccessFile(file, "rw");
+	} catch (FileNotFoundException e) { /* file will be created */ };
+	try {
+    	    rafile.writeBytes("%use class moderncv\n"
+                + "\\documentclass[11pt, a4paper] { moderncv }\n"
+                + "%language package\n"
+                + "\\usepackage [ german ]{ babel }\n"
+                + "%chosen theme\n"
+                + "\\moderncvtheme [ blue ]{ classic }\n");
+            rafile.writeBytes(convertUmlaut(createPersonalData()));
+            rafile.writeBytes(convertUmlaut(createMobileLine()));
+            rafile.writeBytes(convertUmlaut(createEmailLine()));
+            rafile.writeBytes(convertUmlaut(createCVLine("erster String",
+	        "zweiter String")));
+            String[] testEntry = {"eins", "zwei", "drei", "vier", "fünf",
+                "sechs" };
+            rafile.writeBytes(convertUmlaut(createCVEntry(testEntry)));
+	} catch (Exception e) {
+	    try {
+	        rafile.writeBytes(e.getMessage());
+            } catch (Exception sub_e) { System.err.println("All hail lord java"); }; 
+	}
+    }
+        
+
+    /**
      * the main function.
      *
      * @param args
@@ -251,48 +298,64 @@ public class CurriculumVitae {
         cv.setPicturePath("kermit.jpg");
         cv.setTelephone("+49 21321 546546");
         cv.setEmail("kermit@muppets.com");
+	
+	try {
+	    cv.writeCV("kermit.tex");
+	} catch (InvalidFileException e) {
+	    System.err.println(e.getMessage());
+	}
+
+	/**
+	 * Below:
+	 * Java 6 vs Java 7 (Java 7 is commented out so I (Julian) can work here)
+	 */
 
         try {
             System.out.println(createPersonalData());
-        } catch (MissingNameException | FileNotFoundException e) {
+        } /*catch (MissingNameException | FileNotFoundException e) {
             System.err.println("You messed up! Please validate your"
                     + " input and try again.");
             e.printStackTrace();
-        }
+        }*/
+	catch (Exception e) { System.err.println("Exception Personal Data"); };
 
         try {
             System.out.println(createMobileLine());
-        } catch (InvalidMobileNumberException | InvalidCVLineException e) {
+        } /*catch (InvalidMobileNumberException | InvalidCVLineException e) {
             System.err.println("You messed up! Please validate your"
                     + " input and try again.");
             e.printStackTrace();
-        }
+        }*/
+	catch (Exception e) { System.err.println("Exception Mobile Line"); };
 
         try {
             System.out.println(createEmailLine());
-        } catch (InvalidEmailException e) {
+        } /*catch (InvalidEmailException e) {
             System.err.println("You messed up! Please validate your"
                     + " input and try again.");
             e.printStackTrace();
-        }
+        }*/
+	catch (Exception e) { System.err.println("Exception Email Line"); };
 
         try {
             System.out.println(createCVLine("erster String", "zweiter String"));
-        } catch (InvalidCVLineException e) {
+        } /*catch (InvalidCVLineException e) {
             System.err.println("You messed up! Please validate your"
                     + " input and try again.");
             e.printStackTrace();
-        }
+        }*/
+	catch (Exception e) { System.err.println("Exception CV Line"); };
 
         try {
             String[] testEntry = {"eins", "zwei", "drei", "vier", "fuenf",
                     "sechs" };
             System.out.println(createCVEntry(testEntry));
-        } catch (InvalidCVEntryException e) {
+        } /*catch (InvalidCVEntryException e) {
             System.err.println("You messed up! Please validate your"
                     + " input and try again.");
             e.printStackTrace();
-        }
+        }*/
+	catch (Exception e) { System.err.println("Exception CV Entry"); };
     }
 }
 
@@ -409,4 +472,21 @@ class InvalidCVEntryException extends Exception {
     public InvalidCVEntryException(final String message) {
         super(message);
     }
+}
+
+/**
+ * Exception for when file cannot be found or is not a .tex file. 
+ */
+
+class InvalidFileException extends Exception {
+
+    /**
+     * Constructor with message.
+     * Calls super constructor, nothing else. 
+     * @param message the error message
+     */
+    public InvalidFileException(final String message) {
+        super(message);
+    }
+
 }

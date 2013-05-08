@@ -1,12 +1,14 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.RandomAccessFile;
+import java.util.ArrayList;
 
 /**
  * Exports a .TeX file of a basic CV with very little information about the
  * person.
- *
+ * 
  * @author Michael Mardaus
+ * @author Julian Felix Rost
  */
 public class CurriculumVitae {
     /**
@@ -29,6 +31,27 @@ public class CurriculumVitae {
      * the email address.
      */
     private static String email;
+
+    /**
+     * the CV Theme.
+     */
+    private static CVTheme theme;
+    
+    /**
+     * skill in languages.
+     */
+    private static ArrayList<String[]> LanguageSkills;
+    
+    public CurriculumVitae() {
+        firstname = "";
+        lastname = "";
+        picturePath = null;
+        telephone = "";
+        email = "";
+        theme = new CVTheme();
+        LanguageSkills = new ArrayList<String[]>(); 
+    }
+    
 
     /**
      * @return the firstname
@@ -106,8 +129,43 @@ public class CurriculumVitae {
     }
 
     /**
+     * @return the theme
+     */
+    public static CVTheme getTheme() {
+        return theme;
+    }
+
+    /**
+     * @param theme
+     *            the theme to set
+     */
+    public final void setTheme(final CVTheme theme) {
+        CurriculumVitae.theme = theme;
+    }
+
+    /**
+     * @return the languageSkills
+     */
+    public final ArrayList<String[]> getLanguageSkills() {
+        return LanguageSkills;
+    }
+
+    /**
+     * adds a language to the skills.
+     * @param lang the language
+     * @param lk the knowledge
+     */
+    public final void addLanguageSkills(String lang, LanguageKnowledge lk) {
+        String[] LanguageSkill = new String[2];
+        LanguageSkill[0] = lang;
+        LanguageSkill[1] = lk.getKnowledge();
+        System.out.println(LanguageSkill[1]);
+        CurriculumVitae.LanguageSkills.add(LanguageSkill);
+    }
+
+    /**
      * Replaces all german umlauts with LaTeX compatible ones.
-     *
+     * 
      * @param s
      *            the input string
      * @return new replaced string
@@ -122,7 +180,7 @@ public class CurriculumVitae {
 
     /**
      * Generates the first lines with personal information.
-     *
+     * 
      * @return two lines if the path is not accessible, three lines if a file is
      *         found at the given path.
      * @throws MissingNameException
@@ -154,7 +212,7 @@ public class CurriculumVitae {
 
     /**
      * Generates one line with phone information.
-     *
+     * 
      * @return a single line
      * @throws InvalidMobileNumberException
      *             if the format is not correct
@@ -174,7 +232,7 @@ public class CurriculumVitae {
 
     /**
      * Generates one line with email information.
-     *
+     * 
      * @return a single line
      * @throws InvalidEmailException
      *             if the format is not correct
@@ -195,7 +253,7 @@ public class CurriculumVitae {
 
     /**
      * Generates generic cv line.
-     *
+     * 
      * @param string1
      *            the first parameter
      * @param string2
@@ -204,18 +262,19 @@ public class CurriculumVitae {
      * @throws InvalidCVLineException
      *             if the second string is not given
      */
-    public static String createCVLine(final String string1,
-            final String string2) throws InvalidCVLineException {
+    public static String createCVLine(final String string1, 
+                                        final String string2)
+            throws InvalidCVLineException {
         if (string2 != null && !string2.isEmpty()) {
             return "\\cvline{" + string1 + "} {" + string2 + "}\n";
         } else {
-            throw new InvalidCVLineException("the cv line has no 2nd argument");
+            throw new InvalidCVLineException("the cvline has no 2nd argument");
         }
     }
 
     /**
      * Generates a cv entry line.
-     *
+     * 
      * @param entry
      *            a string array with exactly 6 strings
      * @return a single line
@@ -236,59 +295,101 @@ public class CurriculumVitae {
     }
 
     /**
-     * Writes curriculum vitae to file.
-     * File must be writeable and have a .tex file extension.
-     * @param path 
-     * 		full path to file including file name
-     * @throws InvalidFileException 
-     * 		if file at path is not writeable or not a .tex file
+     * Writes curriculum vitae to file. File must be writeable and have a .tex
+     * file extension.
+     * 
+     * @param path
+     *            full path to file including file name
+     * @throws InvalidFileException
+     *             if file at path is not writeable or not a .tex file
      */
-    public static void writeCV(final String path) throws InvalidFileException {
+    public void writeCV(final String path) throws InvalidFileException {
         File file = new File(path);
-	if (!(file.getName().matches("(\\w)*\\.tex")))
-	    throw new InvalidFileException("File is not a .tex file.");
-	if (file.getParent() == "null")
-	    if (!(new File(".")).canWrite())
-	        throw new InvalidFileException("Cannot write to destination "
-		    + "directory (.).");
-	else if (!((new File(file.getParent()).canWrite())))
-	    throw new InvalidFileException("Cannot write to destination "
-	        + "directory (" + file.getParent() + ").");
+        if (!(file.getName().matches("(\\w)*\\.tex")))
+            throw new InvalidFileException("File is not a .tex file.");
+        if (file.getParent() == "null")
+            if (!(new File(".")).canWrite())
+                throw new InvalidFileException("Cannot write to destination "
+                        + "directory (.).");
+            else if (!((new File(file.getParent()).canWrite())))
+                throw new InvalidFileException("Cannot write to destination "
+                        + "directory (" + file.getParent() + ").");
         RandomAccessFile rafile = null;
-	try {
-	    rafile = new RandomAccessFile(file, "rw");
-	} catch (FileNotFoundException e) { /* file will be created */ };
-	try {
-    	    rafile.writeBytes("%use class moderncv\n"
-                + "\\documentclass[11pt, a4paper] {moderncv}\n\n"
-                + "%language package\n"
-                + "\\usepackage [german]{babel}\n\n"
-                + "%chosen theme\n"
-                + "\\moderncvtheme [blue]{classic}\n\n");
+        try {
+            rafile = new RandomAccessFile(file, "rw");
+        } catch (FileNotFoundException e) { /* file will be created */
+        }
+        ;
+        try {
+            rafile.writeBytes("%use class moderncv\n"
+                    + "\\documentclass[11pt, a4paper] {moderncv}\n\n"
+                    + "%language package\n"
+                    + "\\usepackage [german]{babel}\n\n" + "%chosen theme\n"
+                    + "\\moderncvtheme [" + getTheme().getColor() + "]{"
+                    + getTheme().getStyle() + "}\n\n");
+            
             rafile.writeBytes(convertUmlaut(createPersonalData()));
             rafile.writeBytes("\n\\begin{document}\n\n\\maketitle\n\n"
                     + "\\section{Kontaktdaten}\n");
             rafile.writeBytes(convertUmlaut(createMobileLine()));
             rafile.writeBytes(convertUmlaut(createEmailLine()));
+            
             rafile.writeBytes("\n\\section{Ausbildung}\n");
-            String[] testEntry = {"eins", "zwei", "drei", "vier", "fünf",
-                "sechs" };
+            String[] testEntry = { "3/2012 - heute", "Studium der Froschologie",
+                    "Joghurt Uni Mainz", "vier", "fünf", "Note 1" };
             rafile.writeBytes(convertUmlaut(createCVEntry(testEntry)));
+            
             rafile.writeBytes("\n\\section{Sprachen}\n");
-            rafile.writeBytes(convertUmlaut(createCVLine("englisch",
-            "verhandlungssicher")));
+            ArrayList<String[]> ls = getLanguageSkills();
+            for (String[] langSkill : ls){
+                rafile.writeBytes(convertUmlaut(
+                        createCVLine(langSkill[0], langSkill[1])));
+            }
+            
+            
             rafile.writeBytes("\n\\end{document}\n");
-	} catch (Exception e) {
-	    try {
-	        rafile.writeBytes(e.getMessage());
-            } catch (Exception sub_e) { System.err.println("All hail lord java"); }; 
-	}
+        } catch (Exception e) {
+            try {
+                rafile.writeBytes(e.getMessage());
+            } catch (Exception sub_e) {
+                System.err.println("All hail lord java");
+            }
+            ;
+        }
     }
+
+    /**
+     * enum with common language skills.
+     * 
+     * @author Michael Mardaus
+     */
+    enum LanguageKnowledge {
+        MOTHER("Muttersprache"), 
+        FLUENT("fließend in Wort und Schrift"), 
+        BASIC("Grundkenntnisse");
+
+        /**
+         * @param text
+         */
+        private LanguageKnowledge(final String text) {
+            this.text = text;
+        }
+
+        private final String text;
+
+        @Override
+        public String toString() {
+            return text;
+        }
         
+        public String getKnowledge() {
+            return text;
+        }
+    };
 
     /**
      * the main function.
-     *
+     * 
      * @param args
      *            commandline arguments
      */
@@ -303,70 +404,91 @@ public class CurriculumVitae {
         cv.setPicturePath("kermit.jpg");
         cv.setTelephone("+49 21321 546546");
         cv.setEmail("kermit@muppets.com");
-	
-	try {
-	    cv.writeCV("kermit.tex");
-	} catch (InvalidFileException e) {
-	    System.err.println(e.getMessage());
-	}
+        cv.setTheme(new CVTheme(CVTheme.Color.GREEN, CVTheme.Style.CLASSIC));
+        cv.addLanguageSkills("deutsch", LanguageKnowledge.MOTHER);
+        cv.addLanguageSkills("englisch", LanguageKnowledge.FLUENT);
+        cv.addLanguageSkills("französich", LanguageKnowledge.BASIC);
 
-	/**
-	 * Below:
-	 * Java 6 vs Java 7 (Java 7 is commented out so I (Julian) can work here)
-	 */
+        try {
+            cv.writeCV("kermit.tex");
+        } catch (InvalidFileException e) {
+            System.err.println(e.getMessage());
+        }
+
+        /**
+         * Below: Java 6 vs Java 7 (Java 7 is commented out so I (Julian) can
+         * work here)
+         */
 
         try {
             System.out.println(createPersonalData());
-        } /*catch (MissingNameException | FileNotFoundException e) {
-            System.err.println("You messed up! Please validate your"
-                    + " input and try again.");
-            e.printStackTrace();
-        }*/
-	catch (Exception e) { System.err.println("Exception Personal Data"); };
+        } /*
+           * catch (MissingNameException | FileNotFoundException e) {
+           * System.err.println("You messed up! Please validate your" +
+           * " input and try again."); e.printStackTrace(); }
+           */
+        catch (Exception e) {
+            System.err.println("Exception Personal Data");
+        }
+        ;
 
         try {
             System.out.println(createMobileLine());
-        } /*catch (InvalidMobileNumberException | InvalidCVLineException e) {
-            System.err.println("You messed up! Please validate your"
-                    + " input and try again.");
-            e.printStackTrace();
-        }*/
-	catch (Exception e) { System.err.println("Exception Mobile Line"); };
+        } /*
+           * catch (InvalidMobileNumberException | InvalidCVLineException e) {
+           * System.err.println("You messed up! Please validate your" +
+           * " input and try again."); e.printStackTrace(); }
+           */
+        catch (Exception e) {
+            System.err.println("Exception Mobile Line");
+        }
+        ;
 
         try {
             System.out.println(createEmailLine());
-        } /*catch (InvalidEmailException e) {
-            System.err.println("You messed up! Please validate your"
-                    + " input and try again.");
-            e.printStackTrace();
-        }*/
-	catch (Exception e) { System.err.println("Exception Email Line"); };
+        } /*
+           * catch (InvalidEmailException e) {
+           * System.err.println("You messed up! Please validate your" +
+           * " input and try again."); e.printStackTrace(); }
+           */
+        catch (Exception e) {
+            System.err.println("Exception Email Line");
+        }
+        ;
 
         try {
             System.out.println(createCVLine("erster String", "zweiter String"));
-        } /*catch (InvalidCVLineException e) {
-            System.err.println("You messed up! Please validate your"
-                    + " input and try again.");
-            e.printStackTrace();
-        }*/
-	catch (Exception e) { System.err.println("Exception CV Line"); };
+        } /*
+           * catch (InvalidCVLineException e) {
+           * System.err.println("You messed up! Please validate your" +
+           * " input and try again."); e.printStackTrace(); }
+           */
+        catch (Exception e) {
+            System.err.println("Exception CV Line");
+        }
+        ;
 
         try {
-            String[] testEntry = {"eins", "zwei", "drei", "vier", "fuenf",
+            String[] testEntry = { "eins", "zwei", "drei", "vier", "fuenf",
                     "sechs" };
             System.out.println(createCVEntry(testEntry));
-        } /*catch (InvalidCVEntryException e) {
-            System.err.println("You messed up! Please validate your"
-                    + " input and try again.");
-            e.printStackTrace();
-        }*/
-	catch (Exception e) { System.err.println("Exception CV Entry"); };
+        } /*
+           * catch (InvalidCVEntryException e) {
+           * System.err.println("You messed up! Please validate your" +
+           * " input and try again."); e.printStackTrace(); }
+           */
+        catch (Exception e) {
+            System.err.println("Exception CV Entry");
+        }
+        ;
     }
 }
 
+//FIXME --------------------------- new class ---------------------------------
+
 /**
  * Exception if a name is not given.
- *
+ * 
  * @author Michael Mardaus
  */
 class MissingNameException extends Exception {
@@ -378,7 +500,7 @@ class MissingNameException extends Exception {
 
     /**
      * Constructor with Message.
-     *
+     * 
      * @param message
      *            the error message
      */
@@ -389,7 +511,7 @@ class MissingNameException extends Exception {
 
 /**
  * Exception if a phonenumber is not valid.
- *
+ * 
  * @author Michael Mardaus
  */
 class InvalidMobileNumberException extends Exception {
@@ -401,7 +523,7 @@ class InvalidMobileNumberException extends Exception {
 
     /**
      * Constructor with Message.
-     *
+     * 
      * @param message
      *            the error message
      */
@@ -412,7 +534,7 @@ class InvalidMobileNumberException extends Exception {
 
 /**
  * Exception if a email is not valid.
- *
+ * 
  * @author Michael Mardaus
  */
 class InvalidEmailException extends Exception {
@@ -424,7 +546,7 @@ class InvalidEmailException extends Exception {
 
     /**
      * Constructor with Message.
-     *
+     * 
      * @param message
      *            the error message
      */
@@ -435,7 +557,7 @@ class InvalidEmailException extends Exception {
 
 /**
  * Exception if a cv line is not valid.
- *
+ * 
  * @author Michael Mardaus
  */
 class InvalidCVLineException extends Exception {
@@ -447,7 +569,7 @@ class InvalidCVLineException extends Exception {
 
     /**
      * Constructor with Message.
-     *
+     * 
      * @param message
      *            the error message
      */
@@ -458,7 +580,7 @@ class InvalidCVLineException extends Exception {
 
 /**
  * Exception if a cv entry is not valid.
- *
+ * 
  * @author Michael Mardaus
  */
 class InvalidCVEntryException extends Exception {
@@ -470,7 +592,7 @@ class InvalidCVEntryException extends Exception {
 
     /**
      * Constructor with Message.
-     *
+     * 
      * @param message
      *            the error message
      */
@@ -480,18 +602,118 @@ class InvalidCVEntryException extends Exception {
 }
 
 /**
- * Exception for when file cannot be found or is not a .tex file. 
+ * Exception for when file cannot be found or is not a .tex file.
  */
 
 class InvalidFileException extends Exception {
 
     /**
-     * Constructor with message.
-     * Calls super constructor, nothing else. 
-     * @param message the error message
+     * Constructor with message. Calls super constructor, nothing else.
+     * 
+     * @param message
+     *            the error message
      */
     public InvalidFileException(final String message) {
         super(message);
     }
 
+}
+
+
+
+//FIXME -------------------- new class ----------------------------------------
+
+
+class CVTheme {
+    /**
+     * the cvmodern color.
+     */
+    private Color color;
+    /**
+     * the cvmodern style.
+     */
+    private Style style;
+
+    /**
+     * default constructor.
+     */
+    public CVTheme() {
+        this.color = Color.BLUE;
+        this.style = Style.CLASSIC;
+    }
+
+    /**
+     * constructor.
+     * 
+     * @param color
+     *            the color
+     * @param style
+     *            the style
+     */
+    public CVTheme(Color color, Style style) {
+        this.color = color;
+        this.style = style;
+    }
+
+    /**
+     * enum with cvmodern colors.
+     * 
+     * @author Michael Mardaus
+     */
+    enum Color {
+        BLACK, BLUE, GREEN, GREY, ORANGE, PURPLE, RED;
+
+        @Override
+        public String toString() {
+            // all lowercase for LaTeX
+            String s = super.toString();
+            return s.toLowerCase();
+        }
+    };
+
+    /**
+     * enum with cvmodern styles.
+     * 
+     * @author Michael Mardaus
+     */
+    enum Style {
+        CASUAL, CLASSIC, EMPTY, OLDSTYLE, BANKING;
+
+        @Override
+        public String toString() {
+            // all lowercase for LaTeX
+            String s = super.toString();
+            return s.toLowerCase();
+        }
+    };
+
+    /**
+     * @return the color
+     */
+    public final Color getColor() {
+        return color;
+    }
+
+    /**
+     * @param color
+     *            the color to set
+     */
+    public final void setColor(Color color) {
+        this.color = color;
+    }
+
+    /**
+     * @return the style
+     */
+    public final Style getStyle() {
+        return style;
+    }
+
+    /**
+     * @param style
+     *            the style to set
+     */
+    public final void setStyle(Style style) {
+        this.style = style;
+    }
 }

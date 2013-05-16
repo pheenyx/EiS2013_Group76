@@ -1,107 +1,376 @@
 import java.awt.Color;
-import java.awt.Point;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-
+import javax.swing.JTabbedPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
 public class CVGui extends JFrame {
-	
+
 	/**
 	 * default serial number
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
 	/**
 	 * fixed title
 	 */
 	private final String TITLE = "Curriculum Vitae";
-	
+
 	/**
 	 * fixed height
 	 */
 	private final int HEIGHT = 640;
-	
+
 	/**
 	 * fixed width
 	 */
 	private final int WIDTH = 480;
+
+	/**
+	 * text on save button
+	 */
+	private final static String SAVE_BUTTON_TEXT = "Save";
+
+	/**
+	 * text on load button
+	 */
+	private final static String LOAD_BUTTON_TEXT = "Load";
+
+	/**
+	 * text on create button
+	 */
+	private final static String CREATE_BUTTON_TEXT = "Create";
+
+	/**
+	 * title of contact details tab
+	 */
+	private final static String CONTACT_TITLE = "Contact Details";
 	
+	/**
+	 * width of contact pane text fields
+	 */
+	private final static int CONTACT_TEXT_WIDTH = 19;
+	
+	/**
+	 * number of rows of addresses
+	 */
+	private final static int CONTACT_ADDRESS_ROWS = 3;
+
+	/**
+	 * content of first name text field
+	 */
+	private final static String CONTACT_FIRST_NAME_TEXTFIELD = "Enter your first name here";
+
+	/**
+	 * content of last name text field
+	 */
+	private final static String CONTACT_LAST_NAME_TEXTFIELD = "Enter your last name here";
+
+	/**
+	 * title of contact details tab
+	 */
+	private final static String CONTACT_ADDRESS_TEXTFIELD = "Enter your address here";
+
+	/**
+	 * title of contact details tab
+	 */
+	private final static String CONTACT_EMAIL_TEXTFIELD = "Enter your e-mail here";
+	
+	/**
+	 * title of contact details tab
+	 */
+	private final static String CONTACT_PHONE_TEXTFIELD = "Enter your phone number here";
+
 	/**
 	 * internally, cv saves the data from input
 	 */
 	private CurriculumVitae cv;
-	
+
 	/**
 	 * main panel, as requested
 	 */
 	private JPanel mainPanel;
-	
+
 	/**
-	 * panel for buttons
+	 * Constructor that makes a CVGui object. Adds all the bells and whistles.
 	 */
-	private JPanel lsc;
-	
-	/**
-	 * buttons for loading, saving and creating cvs
-	 */
-	private JButton load, save, create;
-	
 	CVGui() {
 		// setting variables
 		this.setTitle(this.TITLE);
 		this.setSize(this.WIDTH, this.HEIGHT);
-		this.setResizable(false);
-		this.setLayout(null);
-		
-		// making the main panel
-		this.mainPanel = new JPanel();
+		this.setMinimumSize(new Dimension(480, 640));
+		// close on ESC press
+		this.addKeyListener(new KeyAdapter() {
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+					System.exit(0);
+				}
+			}
+		});
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.center();
+
+		this.mainPanel = makeMainPanel();
 		this.setContentPane(this.mainPanel);
-		this.mainPanel.setBorder(BorderFactory.createLineBorder(Color.red));
-		this.mainPanel.setLayout(null);
-		
+	}
+
+	/**
+	 * Centers this instance of CVGui.
+	 */
+	public void center() {
+		center(this);
+	}
+
+	/**
+	 * Centers a JFrame into the middle of the screen.
+	 * 
+	 * @param frame
+	 *            the frame to be centered.
+	 */
+	private static void center(JFrame frame) {
+		// get the size of the screen
+		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+
+		// determine the new location of the window
+		int w = frame.getSize().width;
+		int h = frame.getSize().height;
+		int x = (dim.width - w) / 2;
+		int y = (dim.height - h) / 2;
+
+		// move the frame
+		frame.setLocation(x, y);
+	}
+
+	/**
+	 * Makes the main panel for the CVGui. Calls helper functions to do so.
+	 * 
+	 * @return the actual main panel.
+	 */
+	private static JPanel makeMainPanel() {
+		JPanel mainPanel = new JPanel();
+		mainPanel.setLayout(new GridBagLayout());
+		mainPanel.setBorder(BorderFactory.createLineBorder(Color.red));
+
 		// making a panel for save, load and create buttons
-		this.lsc = new JPanel();
-		this.lsc.setSize(200, 50);
-		this.lsc.setBorder(BorderFactory.createLineBorder(Color.green));
-		
+		JPanel lsc = new JPanel();
+		lsc.setBorder(BorderFactory.createLineBorder(Color.green));
+
 		// making buttons for saving, loading and creating cvs
-		this.save = new JButton("Save");
-		this.save.addActionListener(new ActionListener() {
+		JButton save = new JButton(CVGui.SAVE_BUTTON_TEXT);
+		save.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// TODO do save
 			}
 		});
-		this.load = new JButton("Load");
-		this.load.addActionListener(new ActionListener() {
+		JButton load = new JButton(CVGui.LOAD_BUTTON_TEXT);
+		load.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// TODO do load
 			}
 		});
-		this.create = new JButton("Create");
-		this.create.addActionListener(new ActionListener() {
+		JButton create = new JButton(CVGui.CREATE_BUTTON_TEXT);
+		create.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// TODO do create
 			}
 		});
-		
 		// adding buttons to button panel
-		this.lsc.add("load", this.load);
-		this.lsc.add("save", this.save);
-		this.lsc.add("create", this.create);
-		
+		lsc.add(load);
+		lsc.add(save);
+		lsc.add(create);
+
 		// setting correct position of button panel
-		int lsc_origin_x = this.mainPanel.getWidth() - this.lsc.getWidth();
-		int lsc_origin_y = this.mainPanel.getHeight() - this.lsc.getHeight();
-		Point lsc_origin = new Point(lsc_origin_x, lsc_origin_y);
-		this.lsc.setLocation(lsc_origin);
-		
+		GridBagConstraints lscConstraints = new GridBagConstraints(0, // gridx
+																		// ("at"
+																		// which
+																		// row)
+				0, // gridy
+				1, // gridwidth (dimensions of grid to be applied)
+				1, // gridheight
+				1.0, // weightx (how much extra space)
+				1.0, // weighty
+				GridBagConstraints.LAST_LINE_END, // anchor (if too small, where
+													// to)
+				GridBagConstraints.NONE, // fill (in which direction to fill if
+											// too small)
+				new Insets(5, 5, 5, 5), // insets (padding on the outside)
+				0, // ipadx (padding on the inside)
+				0); // ipady
 		// adding the finished button panel to the main panel
-		this.mainPanel.add("lsc", this.lsc);
+		mainPanel.add(lsc, lscConstraints);
+		// adding the tab pane
+		addJTPane(mainPanel);
+		return mainPanel;
+	}
+
+	/**
+	 * Helper function that adds a correctly initialized tab pane to a frame. To
+	 * be used in conjunction with the main frame of this class.
+	 * 
+	 * @param mainPanel
+	 *            the main panel that needs to have a tabs pane added.
+	 */
+	private static void addJTPane(JPanel mainPanel) {
+		JTabbedPane jtp = new JTabbedPane();
+		jtp.setBorder(BorderFactory.createLineBorder(Color.blue));
+		// setting correct position of tab pane
+		GridBagConstraints jtbConstraints = new GridBagConstraints(0, // gridx
+																		// ("at"
+																		// which
+																		// row)
+				0, // gridy
+				1, // gridwidth (dimensions of grid to be applied)
+				1, // gridheight
+				1.0, // weightx (how much extra space)
+				1.0, // weighty
+				GridBagConstraints.CENTER, // anchor (if too small, where
+											// to)
+				GridBagConstraints.BOTH, // fill (in which direction to fill if
+											// too small)
+				new Insets(5, 5, 45, 5), // insets (padding on the outside) top,
+											// left, bottom, right
+				0, // ipadx (padding on the inside)
+				0); // ipady
+		// adding content tabs to tabs pane
+		addContactDetailsTab(jtp);
+
+		// adding the finished tab pane to the main panel
+		mainPanel.add(jtp, jtbConstraints);
+	}
+
+	/**
+	 * Helper function used to add the contact details tab to the tab pane. To
+	 * be used in conjunction with the tab pane of this class.
+	 * 
+	 * @param jtp
+	 *            the tab pane which will have contact details tab added.
+	 */
+	private static void addContactDetailsTab(JTabbedPane jtp) {
+		// making the panel that's used to display the contact details tab
+		JPanel contactDetails = new JPanel();
+		contactDetails.setBorder(BorderFactory.createLineBorder(Color.yellow));
+		contactDetails.setLayout(new GridBagLayout());
+		
+		// making several text fields that need to be on the details tab
+		// first up: first name
+		JTextField jtfFirstName = new JTextField(CVGui.CONTACT_FIRST_NAME_TEXTFIELD, CVGui.CONTACT_TEXT_WIDTH);
+		jtfFirstName.addFocusListener(new ContactsFocusListener(CVGui.CONTACT_FIRST_NAME_TEXTFIELD));
+		// next: last name text field
+		JTextField jtfLastName = new JTextField(CVGui.CONTACT_LAST_NAME_TEXTFIELD, CVGui.CONTACT_TEXT_WIDTH);
+		jtfLastName.addFocusListener(new ContactsFocusListener(CVGui.CONTACT_LAST_NAME_TEXTFIELD));
+		// address text field
+		JTextArea jtaAddress = new JTextArea(CVGui.CONTACT_ADDRESS_TEXTFIELD,CVGui.CONTACT_ADDRESS_ROWS, CVGui.CONTACT_TEXT_WIDTH);
+		jtaAddress.setBorder(BorderFactory.createLineBorder(Color.gray));
+		jtaAddress.addFocusListener(new ContactsFocusListener(CVGui.CONTACT_ADDRESS_TEXTFIELD));
+		// email text field
+		JTextField jtfEmail = new JTextField(CVGui.CONTACT_EMAIL_TEXTFIELD, CVGui.CONTACT_TEXT_WIDTH);
+		jtfEmail.addFocusListener(new ContactsFocusListener(CVGui.CONTACT_EMAIL_TEXTFIELD));
+		// phone number text field
+		JTextField jtfPhone = new JTextField(CVGui.CONTACT_PHONE_TEXTFIELD, CVGui.CONTACT_TEXT_WIDTH);
+		jtfEmail.addFocusListener(new ContactsFocusListener(CVGui.CONTACT_PHONE_TEXTFIELD));
+		
+		// making a little box where all the text fields shall gather
+		JPanel boxOfTexts = new JPanel();
+		boxOfTexts.setLayout(new BoxLayout(boxOfTexts, BoxLayout.Y_AXIS));
+		boxOfTexts.add(jtfFirstName);
+		boxOfTexts.add(jtfLastName);
+		boxOfTexts.add(jtaAddress);
+		boxOfTexts.add(jtfEmail);
+		boxOfTexts.add(jtfPhone);
+		
+		// setting correct position of box
+		GridBagConstraints boxConstraints = new GridBagConstraints(0, // gridx
+																		// ("at"
+																		// which
+																		// row)
+				0, // gridy
+				3, // gridwidth (dimensions of grid to be applied)
+				3, // gridheight
+				1.0, // weightx (how much extra space)
+				1.0, // weighty
+				GridBagConstraints.FIRST_LINE_START, // anchor (if too small, where
+											// to)
+				GridBagConstraints.NONE, // fill (in which direction to fill if
+											// too small)
+				new Insets(5, 5, 5, 5), // insets (padding on the outside) top,
+											// left, bottom, right
+				0, // ipadx (padding on the inside)
+				0); // ipady
+		
+		// adding the box to the tab
+		contactDetails.add(boxOfTexts, boxConstraints);
+		
+		// making picture button
+		JButton addPic = new JButton();
+		addPic.setPreferredSize(new Dimension(137, 177));
+		addPic.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser jfc = new JFileChooser();
+			}
+		});
+		
+		// setting correct position of picture button
+		GridBagConstraints addPicConstraints = new GridBagConstraints(1, // gridx
+																		// ("at"
+																		// which
+																		// row)
+				1, // gridy
+				3, // gridwidth (dimensions of grid to be applied)
+				3, // gridheight
+				1.0, // weightx (how much extra space)
+				1.0, // weighty
+				GridBagConstraints.LAST_LINE_END, // anchor (if too small, where
+											// to)
+				GridBagConstraints.NONE, // fill (in which direction to fill if
+											// too small)
+				new Insets(5, 5, 5, 5), // insets (padding on the outside) top,
+											// left, bottom, right
+				0, // ipadx (padding on the inside)
+				0); // ipady
+		
+		// adding the finished button to the tab
+		contactDetails.add(addPic, addPicConstraints);
+		
+		// adding the finished contact details tab to the tab pane
+		jtp.addTab(CVGui.CONTACT_TITLE, contactDetails);
+	}
+	
+	static class ContactsFocusListener implements FocusListener {
+		
+		String content;
+		
+		ContactsFocusListener(String content) {
+			this.content = content;
+		}
+		
+		public void focusGained(FocusEvent e) {
+			JTextField f = (JTextField) e.getComponent();
+			if (f.getText().equals(this.content))
+				f.setText("");
+		}
+
+		public void focusLost(FocusEvent e) {
+			JTextField f = (JTextField) e.getComponent();
+			if (f.getText().equals(""))
+				f.setText(this.content);
+		}
 	}
 
 }

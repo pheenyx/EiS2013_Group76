@@ -17,14 +17,14 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 public class CVGui extends JFrame {
 
@@ -107,6 +107,31 @@ public class CVGui extends JFrame {
 	 * title of the preferences tab
 	 */
 	private final static String PREFS_TITLE = "Preferences";
+
+	/**
+	 * title of the colors' panel
+	 */
+	private final static String PREFS_COLOR_TITLE = "Colors";
+
+	/**
+	 * title of the styles' panel
+	 */
+	private final static String PREFS_STYLE_TITLE = "Styles";
+
+	/**
+	 * title of the content tab
+	 */
+	private final static String CONTENT_TITLE = "Content";
+
+	/**
+	 * default value of section name text field
+	 */
+	private final static String CONTENT_SECTION_NAME_TEXTFIELD = "Enter section name here";
+
+	/**
+	 * default value of section name text field
+	 */
+	private final static String CONTENT_ADD_SECTION_BUTTON = "Add Section";
 
 	/**
 	 * internally, cv saves the data from input
@@ -211,18 +236,18 @@ public class CVGui extends JFrame {
 
 		// setting correct position of button panel
 		GridBagConstraints lscConstraints = new GridBagConstraints(0, // gridx
-																		// ("at"
-																		// which
-																		// row)
+				// ("at"
+				// which
+				// row)
 				0, // gridy
 				1, // gridwidth (dimensions of grid to be applied)
 				1, // gridheight
 				1.0, // weightx (how much extra space)
 				1.0, // weighty
 				GridBagConstraints.LAST_LINE_END, // anchor (if too small, where
-													// to)
+				// to)
 				GridBagConstraints.NONE, // fill (in which direction to fill if
-											// too small)
+				// too small)
 				new Insets(5, 5, 5, 5), // insets (padding on the outside)
 				0, // ipadx (padding on the inside)
 				0); // ipady
@@ -245,20 +270,20 @@ public class CVGui extends JFrame {
 		jtp.setBorder(BorderFactory.createLineBorder(Color.blue));
 		// setting correct position of tab pane
 		GridBagConstraints jtbConstraints = new GridBagConstraints(0, // gridx
-																		// ("at"
-																		// which
-																		// row)
+				// ("at"
+				// which
+				// row)
 				0, // gridy
 				1, // gridwidth (dimensions of grid to be applied)
 				1, // gridheight
 				1.0, // weightx (how much extra space)
 				1.0, // weighty
 				GridBagConstraints.CENTER, // anchor (if too small, where
-											// to)
+				// to)
 				GridBagConstraints.BOTH, // fill (in which direction to fill if
-											// too small)
+				// too small)
 				new Insets(5, 5, 45, 5), // insets (padding on the outside) top,
-											// left, bottom, right
+				// left, bottom, right
 				0, // ipadx (padding on the inside)
 				0); // ipady
 		// adding content tabs to tabs pane
@@ -266,6 +291,8 @@ public class CVGui extends JFrame {
 		addContactDetailsTab(jtp);
 		// preferences tab
 		addPrefsTab(jtp);
+		// content tab
+		addContentTab(jtp);
 
 		// adding the finished tab pane to the main panel
 		mainPanel.add(jtp, jtbConstraints);
@@ -288,28 +315,28 @@ public class CVGui extends JFrame {
 		// first up: first name
 		JTextField jtfFirstName = new JTextField(
 				CVGui.CONTACT_FIRST_NAME_TEXTFIELD, CVGui.CONTACT_TEXT_WIDTH);
-		jtfFirstName.addFocusListener(new ContactsTextFocusListener(
+		jtfFirstName.addFocusListener(new FieldCleanerFocusListener(
 				CVGui.CONTACT_FIRST_NAME_TEXTFIELD));
 		// next: last name text field
 		JTextField jtfLastName = new JTextField(
 				CVGui.CONTACT_LAST_NAME_TEXTFIELD, CVGui.CONTACT_TEXT_WIDTH);
-		jtfLastName.addFocusListener(new ContactsTextFocusListener(
+		jtfLastName.addFocusListener(new FieldCleanerFocusListener(
 				CVGui.CONTACT_LAST_NAME_TEXTFIELD));
 		// address text field
 		JTextArea jtaAddress = new JTextArea(CVGui.CONTACT_ADDRESS_TEXTFIELD,
 				CVGui.CONTACT_ADDRESS_ROWS, CVGui.CONTACT_TEXT_WIDTH);
 		jtaAddress.setBorder(BorderFactory.createLineBorder(Color.gray));
-		jtaAddress.addFocusListener(new ContactsAreaFocusListener(
+		jtaAddress.addFocusListener(new AreaCleanerFocusListener(
 				CVGui.CONTACT_ADDRESS_TEXTFIELD));
 		// email text field
 		JTextField jtfEmail = new JTextField(CVGui.CONTACT_EMAIL_TEXTFIELD,
 				CVGui.CONTACT_TEXT_WIDTH);
-		jtfEmail.addFocusListener(new ContactsTextFocusListener(
+		jtfEmail.addFocusListener(new FieldCleanerFocusListener(
 				CVGui.CONTACT_EMAIL_TEXTFIELD));
 		// phone number text field
 		JTextField jtfPhone = new JTextField(CVGui.CONTACT_PHONE_TEXTFIELD,
 				CVGui.CONTACT_TEXT_WIDTH);
-		jtfPhone.addFocusListener(new ContactsTextFocusListener(
+		jtfPhone.addFocusListener(new FieldCleanerFocusListener(
 				CVGui.CONTACT_PHONE_TEXTFIELD));
 
 		// making a little box where all the text fields shall gather
@@ -323,21 +350,21 @@ public class CVGui extends JFrame {
 
 		// setting correct position of box
 		GridBagConstraints boxConstraints = new GridBagConstraints(0, // gridx
-																		// ("at"
-																		// which
-																		// row)
+				// ("at"
+				// which
+				// row)
 				0, // gridy
 				2, // gridwidth (dimensions of grid to be applied)
 				2, // gridheight
 				1.0, // weightx (how much extra space)
 				1.0, // weighty
 				GridBagConstraints.FIRST_LINE_START, // anchor (if too small,
-														// where
+				// where
 				// to)
 				GridBagConstraints.NONE, // fill (in which direction to fill if
-											// too small)
+				// too small)
 				new Insets(5, 5, 5, 5), // insets (padding on the outside) top,
-										// left, bottom, right
+				// left, bottom, right
 				0, // ipadx (padding on the inside)
 				0); // ipady
 
@@ -351,9 +378,9 @@ public class CVGui extends JFrame {
 
 		// setting correct position of picture button
 		GridBagConstraints addPicConstraints = new GridBagConstraints(2, // gridx
-																			// ("at"
-																			// which
-																			// row)
+				// ("at"
+				// which
+				// row)
 				1, // gridy
 				1, // gridwidth (dimensions of grid to be applied)
 				1, // gridheight
@@ -362,9 +389,9 @@ public class CVGui extends JFrame {
 				GridBagConstraints.CENTER, // anchor (if too small, where
 				// to)
 				GridBagConstraints.NONE, // fill (in which direction to fill if
-											// too small)
+				// too small)
 				new Insets(5, 5, 5, 5), // insets (padding on the outside) top,
-										// left, bottom, right
+				// left, bottom, right
 				0, // ipadx (padding on the inside)
 				0); // ipady
 
@@ -385,19 +412,124 @@ public class CVGui extends JFrame {
 		// making preferences panel
 		JPanel cvPreferences = new JPanel();
 		cvPreferences.setBorder(BorderFactory.createLineBorder(Color.orange));
-		
+		// don't set layout for this, because flowLayout is just perfect anyways
+
+		// making a panel for the colors' radio buttons
 		JPanel colors = new JPanel();
-		// TODO
+		colors.setBorder(BorderFactory
+				.createTitledBorder(CVGui.PREFS_COLOR_TITLE));
+		colors.setLayout(new BoxLayout(colors, BoxLayout.Y_AXIS));
+		for (CVTheme.ThemeColor c : CVTheme.ThemeColor.values()) {
+			JRadioButton radio = new JRadioButton();
+			radio.setText(c.toString());
+			Color bg = c.toColor();
+			radio.setBackground(bg);
+			colors.add(radio);
+		}
+		// adding the colors panel to the preferences tab
+		cvPreferences.add(colors);
+
+		JPanel styles = new JPanel();
+		styles.setBorder(BorderFactory
+				.createTitledBorder(CVGui.PREFS_STYLE_TITLE));
+		styles.setLayout(new BoxLayout(styles, BoxLayout.Y_AXIS));
+		for (CVTheme.ThemeStyle s : CVTheme.ThemeStyle.values()) {
+			JRadioButton radio = new JRadioButton();
+			radio.setText(s.toString());
+			styles.add(radio);
+		}
+		// adding the styles panel to the preferences tab
+		cvPreferences.add(styles);
 
 		// adding the finished preferences tab to the tab pane
 		jtp.addTab(CVGui.PREFS_TITLE, cvPreferences);
 	}
 
-	class ContactsTextFocusListener implements FocusListener {
+	private void addContentTab(JTabbedPane jtp) {
+		// making content panel
+		JPanel cvContent = new JPanel();
+		cvContent.setBorder(BorderFactory.createLineBorder(Color.WHITE));
+		cvContent.setLayout(new GridBagLayout());
+
+		// making panel with box layout to encapsulate adding and choosing
+		// sections
+		JPanel chooseAddSections = new JPanel();
+		chooseAddSections.setBorder(BorderFactory.createLineBorder(Color.CYAN));
+		chooseAddSections.setLayout(new BoxLayout(chooseAddSections,
+				BoxLayout.Y_AXIS));
+
+		// making combo box to display section names
+		JComboBox comboSections = new JComboBox();
+		// making text fields to enter section names
+		JTextField sectionName = new JTextField();
+		sectionName.setText(CVGui.CONTENT_SECTION_NAME_TEXTFIELD);
+		sectionName.addFocusListener(new FieldCleanerFocusListener(
+				CONTENT_SECTION_NAME_TEXTFIELD));
+		// making button for adding sections
+		JButton addSection = new JButton();
+		addSection.setText(CVGui.CONTENT_ADD_SECTION_BUTTON);
+		addSection.addActionListener(new SectionButtonListener(sectionName,
+				comboSections));
+
+		// adding elements to their panel
+		chooseAddSections.add(sectionName);
+		chooseAddSections.add(addSection);
+		chooseAddSections.add(comboSections);
+
+		// setting container panel's position
+		GridBagConstraints cASConstraints = new GridBagConstraints(0, // gridx
+				// ("at"
+				// which
+				// row)
+				0, // gridy
+				1, // gridwidth (dimensions of grid to be applied)
+				1, // gridheight
+				1.0, // weightx (how much extra space)
+				1.0, // weighty
+				GridBagConstraints.FIRST_LINE_START, // anchor (if too small,
+				// where
+				// to)
+				GridBagConstraints.NONE, // fill (in which direction to fill if
+				// too small)
+				new Insets(5, 5, 5, 5), // insets (padding on the outside) top,
+				// left, bottom, right
+				0, // ipadx (padding on the inside)
+				0); // ipady
+		// adding this panel to tab
+		cvContent.add(chooseAddSections, cASConstraints);
+		
+		// making another container panel for entry vs line
+		JPanel entryLine = new JPanel();
+		entryLine.setLayout(new BoxLayout(entryLine, BoxLayout.Y_AXIS));
+		JTextField line1 = new JTextField();
+		JTextField line2 = new JTextField();
+		JTextField line3 = new JTextField();
+		JTextField line4 = new JTextField();
+		JTextField line5 = new JTextField();
+		JTextField line6 = new JTextField();
+		entryLine.add(line1);
+		entryLine.add(line2);
+		entryLine.add(line3);
+		entryLine.add(line4);
+		entryLine.add(line5);
+		entryLine.add(line6);
+		
+		JRadioButton cvEntry = new JRadioButton();
+		cvEntry.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+			}
+		});
+
+		// adding the finished content tab to the tab pane
+		jtp.addTab(CVGui.CONTENT_TITLE, cvContent);
+	}
+
+	class FieldCleanerFocusListener implements FocusListener {
 
 		String content;
 
-		ContactsTextFocusListener(String content) {
+		FieldCleanerFocusListener(String content) {
 			this.content = content;
 		}
 
@@ -414,11 +546,11 @@ public class CVGui extends JFrame {
 		}
 	}
 
-	class ContactsAreaFocusListener implements FocusListener {
+	class AreaCleanerFocusListener implements FocusListener {
 
 		String content;
 
-		ContactsAreaFocusListener(String content) {
+		AreaCleanerFocusListener(String content) {
 			this.content = content;
 		}
 
@@ -448,7 +580,27 @@ public class CVGui extends JFrame {
 						Image.SCALE_SMOOTH);
 				icon.setImage(image);
 				button.setIcon(icon);
-				cv.setPicturePath(file.getAbsolutePath());
+				cv.setPicture(file.getAbsolutePath());
+			}
+		}
+	}
+
+	class SectionButtonListener implements ActionListener {
+
+		JTextField jtf;
+		JComboBox jcb;
+
+		SectionButtonListener(JTextField jtf, JComboBox jcb) {
+			this.jtf = jtf;
+			this.jcb = jcb;
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			if (!(this.jtf.getText()
+					.equals(CVGui.CONTENT_SECTION_NAME_TEXTFIELD))) {
+				Section section = new Section(this.jtf.getText());
+				this.jcb.addItem(section);
+				cv.addSection(this.jtf.getText());
 			}
 		}
 	}

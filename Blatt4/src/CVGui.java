@@ -155,6 +155,11 @@ public class CVGui extends JFrame {
 	private final static String CONTENT_RADIO_LINE = "Line";
 
 	/**
+	 * text on property button
+	 */
+	private final static String CONTENT_PROP_BUTTON = "Add Property";
+
+	/**
 	 * internally, cv saves the data from input
 	 */
 	private CurriculumVitae cv;
@@ -600,6 +605,12 @@ public class CVGui extends JFrame {
 		rBConstraints.gridy = 2;
 		cvContent.add(cvEntry, rBConstraints);
 
+		// making button to add properties
+		JButton addProperty = new JButton();
+		addProperty.setText(CVGui.CONTENT_PROP_BUTTON);
+		addProperty.addActionListener(new PropertyButtonListener(comboSections,
+				buttons, fields));
+
 		// adding the finished content tab to the tab pane
 		jtp.addTab(CVGui.CONTENT_TITLE, cvContent);
 	}
@@ -711,6 +722,56 @@ public class CVGui extends JFrame {
 				b.setSelected(false);
 				if (b.equals(e.getSource())) {
 					b.setSelected(true);
+				}
+			}
+		}
+	}
+
+	class PropertyButtonListener implements ActionListener {
+
+		JComboBox jcb;
+		LinkedList<JRadioButton> buttons;
+		JTextField[] fields;
+
+		PropertyButtonListener(JComboBox jcb, LinkedList<JRadioButton> buttons,
+				JTextField[] fields) {
+			this.jcb = jcb;
+			this.buttons = buttons;
+			this.fields = fields;
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			// in theory, could add more here (extensibility)
+			boolean entry = false;
+			boolean line = false;
+			for (JRadioButton b : this.buttons) {
+				if (b.isEnabled()) {
+					if (b.getText().equals(CVGui.CONTENT_RADIO_ENTRY))
+						entry = true;
+					else if (b.getText().equals(CVGui.CONTENT_RADIO_LINE))
+						line = true;
+				}
+			}
+			if (entry == line) 
+				return; // really, we should throw an exception here, but it's not really worth the effort
+			CVProperty cvp = null;
+			if (entry) {
+				LinkedList<String> content = new LinkedList<String>();
+				for (JTextField f : this.fields) {
+					content.add(f.getText());
+				}
+				cvp = new CVEntry((String[]) content.toArray());
+			}
+			else if (line) {
+				LinkedList<String> content = new LinkedList<String>();
+				for (JTextField f : this.fields) {
+					content.add(f.getText());
+				}
+				cvp = new CVLine((String[]) content.toArray());
+			}
+			for (Section s : cv.getSections()) {
+				if (s.equals(this.jcb.getSelectedItem())) {
+					s.addEntry(cvp);
 				}
 			}
 		}

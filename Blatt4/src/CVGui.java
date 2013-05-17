@@ -12,6 +12,7 @@ import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.util.LinkedList;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -132,6 +133,26 @@ public class CVGui extends JFrame {
 	 * default value of section name text field
 	 */
 	private final static String CONTENT_ADD_SECTION_BUTTON = "Add Section";
+
+	/**
+	 * number of text fields on content subsection
+	 */
+	private final static int CONTENT_SECTION_TEXT_FIELDS = 6;
+
+	/**
+	 * default text in content's text fields
+	 */
+	private final static String CONTENT_TEXT_FIELD = "Enter text here";
+
+	/**
+	 * text next to entry radio button
+	 */
+	private final static String CONTENT_RADIO_ENTRY = "Entry";
+
+	/**
+	 * text next to line radio button
+	 */
+	private final static String CONTENT_RADIO_LINE = "Line";
 
 	/**
 	 * internally, cv saves the data from input
@@ -448,13 +469,16 @@ public class CVGui extends JFrame {
 	private void addContentTab(JTabbedPane jtp) {
 		// making content panel
 		JPanel cvContent = new JPanel();
-		cvContent.setBorder(BorderFactory.createLineBorder(Color.WHITE));
+		cvContent.setBorder(BorderFactory.createLineBorder(Color.YELLOW));
 		cvContent.setLayout(new GridBagLayout());
 
 		// making panel with box layout to encapsulate adding and choosing
 		// sections
 		JPanel chooseAddSections = new JPanel();
 		chooseAddSections.setBorder(BorderFactory.createLineBorder(Color.CYAN));
+		chooseAddSections.setMaximumSize(new Dimension((int) cvContent
+				.getSize().getHeight() / 2, (int) cvContent.getSize()
+				.getWidth() / 2));
 		chooseAddSections.setLayout(new BoxLayout(chooseAddSections,
 				BoxLayout.Y_AXIS));
 
@@ -486,7 +510,7 @@ public class CVGui extends JFrame {
 				1, // gridheight
 				1.0, // weightx (how much extra space)
 				1.0, // weighty
-				GridBagConstraints.FIRST_LINE_START, // anchor (if too small,
+				GridBagConstraints.CENTER, // anchor (if too small,
 				// where
 				// to)
 				GridBagConstraints.NONE, // fill (in which direction to fill if
@@ -497,29 +521,84 @@ public class CVGui extends JFrame {
 				0); // ipady
 		// adding this panel to tab
 		cvContent.add(chooseAddSections, cASConstraints);
-		
+
 		// making another container panel for entry vs line
 		JPanel entryLine = new JPanel();
+		entryLine.setBorder(BorderFactory.createLineBorder(Color.CYAN));
+		// giving it box layout to stack the text fields
 		entryLine.setLayout(new BoxLayout(entryLine, BoxLayout.Y_AXIS));
-		JTextField line1 = new JTextField();
-		JTextField line2 = new JTextField();
-		JTextField line3 = new JTextField();
-		JTextField line4 = new JTextField();
-		JTextField line5 = new JTextField();
-		JTextField line6 = new JTextField();
-		entryLine.add(line1);
-		entryLine.add(line2);
-		entryLine.add(line3);
-		entryLine.add(line4);
-		entryLine.add(line5);
-		entryLine.add(line6);
-		
+		// making appropriate number of text fields and adding them everywhere
+		JTextField[] fields = new JTextField[CVGui.CONTENT_SECTION_TEXT_FIELDS];
+		for (int i = 0; i < CVGui.CONTENT_SECTION_TEXT_FIELDS; i++) {
+			JTextField foo = new JTextField();
+			foo.setText(CVGui.CONTENT_TEXT_FIELD);
+			foo.addFocusListener(new FieldCleanerFocusListener(
+					CVGui.CONTENT_TEXT_FIELD));
+			fields[i] = foo;
+			entryLine.add(foo);
+		}
+		// setting the container's position
+		GridBagConstraints eLConstraints = new GridBagConstraints(0, // gridx
+				// ("at"
+				// which
+				// row)
+				3, // gridy
+				1, // gridwidth (dimensions of grid to be applied)
+				1, // gridheight
+				1.0, // weightx (how much extra space)
+				1.0, // weighty
+				GridBagConstraints.CENTER, // anchor (if too small,
+				// where to)
+				GridBagConstraints.NONE, // fill (in which direction to fill if
+				// too small)
+				new Insets(5, 5, 5, 5), // insets (padding on the outside) top,
+				// left, bottom, right
+				0, // ipadx (padding on the inside)
+				0); // ipady
+		// adding the container panel to the actual tab's panel
+		cvContent.add(entryLine, eLConstraints);
+
+		// making the radio buttons
 		JRadioButton cvEntry = new JRadioButton();
-		cvEntry.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				
-			}
-		});
+		cvEntry.setText(CVGui.CONTENT_RADIO_ENTRY);
+		// setting action to enable the third four text fields
+		cvEntry.setActionCommand("enable3rd4");
+		// making line radio button
+		JRadioButton cvLine = new JRadioButton();
+		cvLine.setText(CVGui.CONTENT_RADIO_LINE);
+		cvLine.setActionCommand("disable3rd4");
+
+		// making a list, checking it once
+		LinkedList<JRadioButton> buttons = new LinkedList<JRadioButton>();
+		buttons.add(cvEntry);
+		buttons.add(cvLine);
+
+		cvEntry.addActionListener(new ContentRadioActionListener(fields,
+				buttons));
+		cvLine
+				.addActionListener(new ContentRadioActionListener(fields,
+						buttons));
+		// adding the radio buttons
+		GridBagConstraints rBConstraints = new GridBagConstraints(0, // gridx
+				// ("at"
+				// which
+				// row)
+				1, // gridy
+				1, // gridwidth (dimensions of grid to be applied)
+				1, // gridheight
+				1.0, // weightx (how much extra space)
+				1.0, // weighty
+				GridBagConstraints.CENTER, // anchor (if too small,
+				// where to)
+				GridBagConstraints.NONE, // fill (in which direction to fill if
+				// too small)
+				new Insets(5, 5, 5, 5), // insets (padding on the outside) top,
+				// left, bottom, right
+				0, // ipadx (padding on the inside)
+				0); // ipady
+		cvContent.add(cvLine, rBConstraints);
+		rBConstraints.gridy = 2;
+		cvContent.add(cvEntry, rBConstraints);
 
 		// adding the finished content tab to the tab pane
 		jtp.addTab(CVGui.CONTENT_TITLE, cvContent);
@@ -601,6 +680,38 @@ public class CVGui extends JFrame {
 				Section section = new Section(this.jtf.getText());
 				this.jcb.addItem(section);
 				cv.addSection(this.jtf.getText());
+			}
+		}
+	}
+
+	class ContentRadioActionListener implements ActionListener {
+
+		JTextField[] fields;
+		LinkedList<JRadioButton> buttons;
+
+		ContentRadioActionListener(JTextField[] fields,
+				LinkedList<JRadioButton> buttons) {
+			this.fields = fields;
+			this.buttons = buttons;
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			if (e.getActionCommand().equals("disable3rd4")) {
+				for (int i = 2; i < CVGui.CONTENT_SECTION_TEXT_FIELDS; i++) {
+					this.fields[i].setText("");
+					this.fields[i].setEnabled(false);
+				}
+			} else if (e.getActionCommand().equals("enable3rd4")) {
+				for (int i = 2; i < CVGui.CONTENT_SECTION_TEXT_FIELDS; i++) {
+					this.fields[i].setEnabled(true);
+					this.fields[i].setText(CVGui.CONTENT_TEXT_FIELD);
+				}
+			}
+			for (JRadioButton b : this.buttons) {
+				b.setSelected(false);
+				if (b.equals(e.getSource())) {
+					b.setSelected(true);
+				}
 			}
 		}
 	}

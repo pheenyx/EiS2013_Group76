@@ -1,4 +1,5 @@
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -447,11 +448,16 @@ public class CVGui extends JFrame {
 		colors.setLayout(new BoxLayout(colors, BoxLayout.Y_AXIS));
 		for (CVTheme.ThemeColor c : CVTheme.ThemeColor.values()) {
 			JRadioButton radio = new JRadioButton();
-			radio.setText(c.toString());
+			radio.setText(c.toString().toLowerCase());
 			Color bg = c.toColor();
 			radio.setBackground(bg);
 			colors.add(radio);
 		}
+		LinkedList<JRadioButton> radios = new LinkedList<JRadioButton>();
+		for (Component c : colors.getComponents()) 
+			radios.add(((JRadioButton) c));
+		for (JRadioButton b : radios) 
+			b.addActionListener(new RadioRotator(radios));
 		// adding the colors panel to the preferences tab
 		cvPreferences.add(colors);
 
@@ -461,9 +467,14 @@ public class CVGui extends JFrame {
 		styles.setLayout(new BoxLayout(styles, BoxLayout.Y_AXIS));
 		for (CVTheme.ThemeStyle s : CVTheme.ThemeStyle.values()) {
 			JRadioButton radio = new JRadioButton();
-			radio.setText(s.toString());
+			radio.setText(s.toString().toLowerCase());
 			styles.add(radio);
 		}
+		radios = new LinkedList<JRadioButton>();
+		for (Component s : styles.getComponents()) 
+			radios.add(((JRadioButton) s));
+		for (JRadioButton b : radios) 
+			b.addActionListener(new RadioRotator(radios));
 		// adding the styles panel to the preferences tab
 		cvPreferences.add(styles);
 
@@ -610,6 +621,8 @@ public class CVGui extends JFrame {
 		addProperty.setText(CVGui.CONTENT_PROP_BUTTON);
 		addProperty.addActionListener(new PropertyButtonListener(comboSections,
 				buttons, fields));
+		
+		cvContent.add(addProperty);
 
 		// adding the finished content tab to the tab pane
 		jtp.addTab(CVGui.CONTENT_TITLE, cvContent);
@@ -773,6 +786,23 @@ public class CVGui extends JFrame {
 				if (s.equals(this.jcb.getSelectedItem())) {
 					s.addEntry(cvp);
 				}
+			}
+		}
+	}
+	
+	class RadioRotator implements ActionListener {
+		
+		LinkedList<JRadioButton> buttons;
+		
+		RadioRotator(LinkedList<JRadioButton> buttons) {
+			this.buttons = buttons;
+		}
+		
+		public void actionPerformed(ActionEvent e) {
+			for (JRadioButton b : this.buttons) {
+				b.setSelected(false);
+				if (e.getSource().equals(b)) 
+					b.setSelected(true);
 			}
 		}
 	}

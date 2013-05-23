@@ -1,0 +1,12 @@
+Blatt 4
+Gruppe 76
+
+Aufgabe 1: 4/4
+Aufgabe 2: 4/4 + 1
+Aufgabe 3: 2/2
+Aufgabe 4: 8/10 + 1
+	d) Keine Anzeige Element für die Propertys der Sections -1
+	e) fehlt -1
+Gesamt: 18/20 + 2
+
+Bemerkung: Zu viele Konstanten machen den Code schwer lesbar, verwendet diese nur, wenn ihr sie wirklich braucht!

@@ -1,0 +1,12 @@
+Blatt 5
+
+Aufgabe 1: 8/8
+
+Aufgabe 2: 9/10
+c) - Hanger, Terminal und Tower sind mit Flughafen komposiiert -0,25
+   - Schalter, Gate und Geschäft sind mit Terminal komposiiert -0,25
+   - Die Klassen Flugzeug und Gebäude sind abstract - 0,5
+
+Aufgabe 3: 2/2
+
+Gesamt: 19/20

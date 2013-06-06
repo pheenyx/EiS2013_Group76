@@ -1,0 +1,14 @@
+a) Die zweite Variante läuft deutlich schneller, da nur ganz am Ende einmal Autoboxing benötigt wird um aus dem int ein Integer zu machen.
+   Bei Variante 1 wird in der Schleife 1000000 mal Autounboxing gebraucht um aus dem Integer einen int zu machen den man inkrementieren kann.
+   Um gleich darauf wieder Autoboxing zu nutzen um ihn wieder zum Integer zu machen.
+
+b) List<?> l                 = Bivarianz   
+   List<? super Number> l    = Kontravarianz  
+   List<Number> l            = Invarianz      
+   List<? extends Number> l  = Kovarianz     
+
+Welche Deklaration, wenn
+-ein Integer in die Liste l einfuegen moechten.   List<Integer> l
+-ein Objekt aus der Liste l auslesen moechten.    List<? extends Object> l
+-ein Double aus der Liste l auslesen moechten.    List<? extends Double> l
+-viele Integer einfuegen und auslesen moechten.   List<Integer> l

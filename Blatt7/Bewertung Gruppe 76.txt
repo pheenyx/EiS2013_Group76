@@ -1,0 +1,23 @@
+Blatt 7
+
+Aufgabe 1: 4/7
+a) 2/2
+b) 2/3 
+   -1 Der Konstruktor von FilteredList muss ObjectFilter<? super T> enthalten!
+c) 0/2 
+
+Aufgabe 2: 2,5 / 3
+a) 1/1
+b) 1,5/2
+   -0,5 Object auslesen geht mit allen Deklarationen!
+
+Aufgabe 3: 1 / 10
+a) 1/4
+   -0,5 Rezeption ist mit RentalAgency komposiiert
+   -0,5 RentalAgency und Building sind nicht komposiiert, von Building wird nur abgeleitet!
+   -0,5 Assoziationsbeschreibungen fehlen teilweise!
+   -0,5 Rollbezeichner fehlen teilweise oder sind anders benannt als die Klasse
+   -1   Sehr viele Methoden fehlen (vor allem in Interfaces sollte man welche implementieren)!
+b) 0/6
+
+Gesamt: 7,5 / 20

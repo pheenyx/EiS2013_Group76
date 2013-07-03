@@ -1,0 +1,36 @@
+durchlauf: 0
+start: 13 basis: 2 result: 40 stopvalue: 13
+durchlauf: 1
+start: 13 basis: 2 result: 20 stopvalue: 40
+durchlauf: 2
+start: 13 basis: 2 result: 10 stopvalue: 40
+durchlauf: 3
+start: 13 basis: 2 result: 5 stopvalue: 20
+durchlauf: 4
+start: 13 basis: 2 result: 16 stopvalue: 20
+durchlauf: 5
+start: 13 basis: 2 result: 8 stopvalue: 10
+durchlauf: 6
+start: 13 basis: 2 result: 4 stopvalue: 10
+durchlauf: 7
+start: 13 basis: 2 result: 2 stopvalue: 5
+durchlauf: 8
+start: 13 basis: 2 result: 1 stopvalue: 5
+durchlauf: 9
+start: 13 basis: 2 result: 4 stopvalue: 16
+durchlauf: 10
+start: 13 basis: 2 result: 2 stopvalue: 16
+durchlauf: 11
+start: 13 basis: 2 result: 1 stopvalue: 8
+durchlauf: 12
+start: 13 basis: 2 result: 4 stopvalue: 8
+durchlauf: 13
+start: 13 basis: 2 result: 2 stopvalue: 4
+durchlauf: 14
+start: 13 basis: 2 result: 1 stopvalue: 4
+durchlauf: 15
+start: 13 basis: 2 result: 4 stopvalue: 2
+durchlauf: 16
+start: 13 basis: 2 result: 2 stopvalue: 2
+
+ausgabe 16

@@ -1,0 +1,15 @@
+Blatt 10
+
+Aufgabe 1: 10/10
+
+
+Aufgabe 2: 8,5 / 10
+a) 1/1
+b) 2,5/3
+   Implementation von set() fehlt!
+c) 1/1
+d) 2/3
+   Wieso haltet ihr euch nicht an die gegebene Konstruktorstruktur?
+e) 2/2
+
+Gesamt: 18,5 / 20

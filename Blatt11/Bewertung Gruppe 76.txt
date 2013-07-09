@@ -1,0 +1,20 @@
+Blatt 11
+
+Aufgabe 1: 5/14
+a) 2/2
+   Allerdings ist es nicht nötig bei if-Abfragen mit zwei atomaren Bedingungen auch zwei Knoten für die Abfragen 
+   darzustellen, auch bei if-Abfragen mit mehr Bedingungen reicht einer!
+b) 2/2
+c) 1/2
+   Fälle bitte nochmals auflisten hier, oder dazuschreiben, welche ihr meint! -1
+d) 0/2
+e) 0/2
+f) 0/2
+g) 0/2
+
+Aufgabe 2: 2/2
+
+Aufgabe 3: 6/4
+   sehr schön!
+
+Gesamt: 13/20

@@ -1,0 +1,24 @@
+b)
+Es könnte Race Conditions geben z.b.
+Einzahlung 1 liest 0 EUR Saldo
+Einzahlung 2 liest 0 EUR Saldo
+Einzahlung 1 addiert 500 EUR zu 0 EUR Saldo => 500 EUR
+Einzahlung 1 schreibt 500 EUR als Saldo zurück
+Einzahlung 2 addiert 500 EUR zu 0 EUR Saldo => 500 EUR
+Einzahlung 2 schreibt 500 EUR als Saldo zurück
+
+===> 500 EUR Saldo statt 1000 EUR (Einzahlung 1 wurde überschrieben)
+
+e)
+Angenommen man hat sein gesamtes Guthaben wegüberwiesen (Transaktion 1), dann werden die
+Zinsen für 0 EUR auf dem Konto gutgeschrieben (Transaktion 2, uncommited read).
+Da die Transaktion 1 aber abgebrochen wird bekommt man das Guthaben wieder per 
+Rollback zurück.
+Nun müsste die Transaktion 2 erneut ausgeführt werden, damit die Zinsen korrekt
+gutgeschrieben werden.
+
+
+f)
+Wären die Transaktionen nicht synchronized, gäbe es wieder die gleiche Konstellation wie in b)
+Es könnte eine Überweisung verloren gehen, wenn Lese und Schreibreihenfolgen ungünstig sind.
+(Dirty Read und Write)

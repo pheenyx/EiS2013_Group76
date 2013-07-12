@@ -3,14 +3,14 @@ import java.awt.event.ActionListener;
 
 
 public class RepaintTimerListener implements ActionListener {
-	SphereFrame frame;
+	SphereGamePanel panel;
 
-	RepaintTimerListener(SphereFrame f) {
-		this.frame = f;
+	RepaintTimerListener(SphereGamePanel p) {
+		this.panel = p;
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent a) {
-		frame.repaint();
+		panel.repaint();
 	}
 }

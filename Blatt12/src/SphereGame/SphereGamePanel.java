@@ -1,18 +1,17 @@
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
-import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.Timer;
@@ -36,6 +35,17 @@ public class SphereGamePanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 
 	/**
+	 * Milliseconds to wait for one frame update. Note: this varies the speed
+	 * for the whole simulation.
+	 */
+	private static final int MILLIS_TO_FRAME = 20;
+
+	/**
+	 * Debugging flag
+	 */
+	private static final boolean DEBUG_FLAG = false;
+
+	/**
 	 * Background color for the game
 	 */
 	private static final Color COLOR_BACKGROUND = new Color(0, 0, 0);
@@ -54,12 +64,12 @@ public class SphereGamePanel extends JPanel {
 	/**
 	 * Player ball size
 	 */
-	private static final double SIZE_PLAYER = 12.0;
+	private static final double SIZE_PLAYER = 12;
 
 	/**
 	 * Target ball size
 	 */
-	private static final double SIZE_TARGET = 6.0;
+	private static final double SIZE_TARGET = 6;
 
 	/**
 	 * Number of players
@@ -69,7 +79,7 @@ public class SphereGamePanel extends JPanel {
 	/**
 	 * Number of balls to be caught
 	 */
-	private static final int NUMBER_TARGETS = 50;
+	private static final int NUMBER_TARGETS = 1;
 
 	/**
 	 * Player number (and thusly, color) ("who is the human player?")
@@ -84,12 +94,12 @@ public class SphereGamePanel extends JPanel {
 	/**
 	 * Step size per update call
 	 */
-	private static final double SIZE_STEP = 2.5;
+	private static final double SIZE_STEP = 3;
 
 	/**
 	 * Handicap for computer players
 	 */
-	private static final double HANDICAP_CPU = 1.5;
+	private static final double HANDICAP_CPU = 2;
 
 	/*
 	 * 
@@ -102,14 +112,14 @@ public class SphereGamePanel extends JPanel {
 	 */
 
 	/**
-	 * Debugging flag
-	 */
-	private boolean debug;
-
-	/**
 	 * Tells us whether we still need to initialize the game properly
 	 */
 	private boolean initFlag = true;
+
+	/**
+	 * Frame tick timer
+	 */
+	private Timer repaintTimer;
 
 	/**
 	 * Computer players AI
@@ -129,20 +139,17 @@ public class SphereGamePanel extends JPanel {
 	/**
 	 * Map of where to move next according to human player input
 	 */
-	private Map<Direction, Boolean> movementMap = Collections
-			.synchronizedMap(new HashMap<Direction, Boolean>());
+	private Map<Direction, Boolean> movementMap = new HashMap<Direction, Boolean>();
 
 	/**
 	 * Player ball positions
 	 */
-	private List<HashMap<Axis, Double>> playerPositions = Collections
-			.synchronizedList(new ArrayList<HashMap<Axis, Double>>());
+	private List<HashMap<Axis, Double>> playerPositions = new CopyOnWriteArrayList<HashMap<Axis, Double>>();
 
 	/**
 	 * Positions of balls to be caught
 	 */
-	private List<HashMap<Axis, Double>> targetPositions = Collections
-			.synchronizedList(new ArrayList<HashMap<Axis, Double>>());
+	private List<HashMap<Axis, Double>> targetPositions = new CopyOnWriteArrayList<HashMap<Axis, Double>>();
 
 	/*
 	 * 
@@ -150,32 +157,24 @@ public class SphereGamePanel extends JPanel {
 	 */
 
 	/**
-	 * Minimal constructor. This panel needs to be told how often to update.
-	 * 
-	 * @param millisToFrame
-	 *            how many milliseconds to wait before updating toward the next
-	 *            frame
+	 * Default Constructor
 	 */
-	public SphereGamePanel(int millisToFrame) {
-		this(millisToFrame, false);
+	public SphereGamePanel() {
+		requestFocus();
+		startUpGraphics();
+		setKeyBindings();
+		setBackground(COLOR_BACKGROUND);
+		initializeVariables();
+		startUpAI(MILLIS_TO_FRAME);
 	}
 
 	/**
-	 * Constructor that additionally checks for debugging messages to be
-	 * printed.
-	 * 
-	 * @param millisToFrame
-	 *            how many milliseconds to wait before updating toward the next
-	 *            frame
-	 * @param debug
-	 *            flag whether to print debugging messages to console
+	 * Starts up the graphics "engine" :D
 	 */
-	public SphereGamePanel(int millisToFrame, boolean debug) {
-		requestFocus();
-		setKeyBindings();
-		setBackground(COLOR_BACKGROUND);
-		initializeVariables(debug);
-		startUpAI(millisToFrame);
+	private void startUpGraphics() {
+		repaintTimer = new Timer(MILLIS_TO_FRAME,
+				new RepaintTimerListener(this));
+		repaintTimer.start();
 	}
 
 	/**
@@ -212,44 +211,41 @@ public class SphereGamePanel extends JPanel {
 
 	/**
 	 * Initializes variables into the constructor.
-	 * 
-	 * @param d
-	 *            debugging flag
 	 */
-	private void initializeVariables(boolean d) {
-		debug = d;
+	private void initializeVariables() {
 		sphereCount = new int[NUMBER_PLAYERS];
-		synchronized (playerPositions) {
-			for (int i = 0; i < NUMBER_PLAYERS; i++) {
-				playerPositions.add(new HashMap<Axis, Double>());
-				sphereCount[i] = 0;
-			}
+		for (int i = 0; i < NUMBER_PLAYERS; i++) {
+			playerPositions.add(new HashMap<Axis, Double>());
+			sphereCount[i] = 0;
 		}
-		synchronized (targetPositions) {
-			for (int i = 0; i < NUMBER_TARGETS; i++)
-				targetPositions.add(new HashMap<Axis, Double>());
-		}
-		synchronized (movementMap) {
-			for (Direction direction : Direction.values())
-				movementMap.put(direction, false);
-		}
+		for (int i = 0; i < NUMBER_TARGETS; i++)
+			targetPositions.add(new HashMap<Axis, Double>());
+		for (Direction direction : Direction.values())
+			movementMap.put(direction, false);
 	}
 
 	private void startUpAI(int millisToFrame) {
-		cpuAI = new ComputerPlayersAdvisor(this, debug);
+		cpuAI = new ComputerPlayersAdvisor(this);
 		cpuTimer = new Timer(millisToFrame, cpuAI);
-		cpuTimer.start();
+		new Thread() {
+			public void run() {
+				try {
+					sleep(250);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				cpuTimer.start();
+			}
+		}.start();
 	}
 
 	/**
 	 * Set player position
 	 */
 	private void setPlayerPosition(int player, double x, double y) {
-		synchronized (playerPositions) {
-			playerPositions.get(player).put(Axis.X, x);
-			playerPositions.get(player).put(Axis.Y, y);
-		}
-		if (debug)
+		playerPositions.get(player).put(Axis.X, x);
+		playerPositions.get(player).put(Axis.Y, y);
+		if (DEBUG_FLAG)
 			System.out.println("p" + player + " " + x + ":" + y);
 	}
 
@@ -257,11 +253,9 @@ public class SphereGamePanel extends JPanel {
 	 * Set target position
 	 */
 	private void setTargetPosition(int target, double x, double y) {
-		synchronized (targetPositions) {
-			targetPositions.get(target).put(Axis.X, x);
-			targetPositions.get(target).put(Axis.Y, y);
-		}
-		if (debug)
+		targetPositions.get(target).put(Axis.X, x);
+		targetPositions.get(target).put(Axis.Y, y);
+		if (DEBUG_FLAG)
 			System.out.println("t" + target + " " + x + ":" + y);
 	}
 
@@ -302,14 +296,12 @@ public class SphereGamePanel extends JPanel {
 	 */
 	private void moveHumanPlayer() {
 		for (Direction direction : Direction.values()) {
-			synchronized (movementMap) {
-				if (movementMap.get(direction)) {
-					double nx = playerPositions.get(HUMAN_PLAYER).get(Axis.X)
-							+ SIZE_STEP * direction.getXDir();
-					double ny = playerPositions.get(HUMAN_PLAYER).get(Axis.Y)
-							+ SIZE_STEP * direction.getYDir();
-					setPlayerPosition(HUMAN_PLAYER, nx, ny);
-				}
+			if (movementMap.get(direction)) {
+				double nx = playerPositions.get(HUMAN_PLAYER).get(Axis.X)
+						+ SIZE_STEP * direction.getXDir();
+				double ny = playerPositions.get(HUMAN_PLAYER).get(Axis.Y)
+						+ SIZE_STEP * direction.getYDir();
+				setPlayerPosition(HUMAN_PLAYER, nx, ny);
 			}
 		}
 	}
@@ -319,21 +311,19 @@ public class SphereGamePanel extends JPanel {
 	 * recommendations
 	 */
 	private void moveCPUAIPlayers() {
-		synchronized (playerPositions) {
-			for (int i = 0; i < playerPositions.size(); i++) {
-				// skip the human player, he moves himself
-				if (i == HUMAN_PLAYER)
-					continue;
-				for (Direction direction : Direction.values()) {
-					if (cpuAI.getAdvice().get(i).get(direction)) {
-						double nx = playerPositions.get(i).get(Axis.X)
-								+ (double) Math.round(SIZE_STEP
-										* direction.getXDir() / HANDICAP_CPU);
-						double ny = playerPositions.get(i).get(Axis.Y)
-								+ (double) Math.round(SIZE_STEP
-										* direction.getYDir() / HANDICAP_CPU);
-						setPlayerPosition(i, nx, ny);
-					}
+		for (int i = 0; i < playerPositions.size(); i++) {
+			// skip the human player, he moves himself
+			if (i == HUMAN_PLAYER)
+				continue;
+			for (Direction direction : Direction.values()) {
+				if (cpuAI.getAdvice().get(i).get(direction)) {
+					double nx = playerPositions.get(i).get(Axis.X)
+							+ (double) Math.round(SIZE_STEP
+									* direction.getXDir() / HANDICAP_CPU);
+					double ny = playerPositions.get(i).get(Axis.Y)
+							+ (double) Math.round(SIZE_STEP
+									* direction.getYDir() / HANDICAP_CPU);
+					setPlayerPosition(i, nx, ny);
 				}
 			}
 		}
@@ -360,23 +350,15 @@ public class SphereGamePanel extends JPanel {
 	 * Cleans up the playing field and awards points for collected targets
 	 */
 	private void collectTargets() {
-		synchronized (playerPositions) {
-			for (HashMap<Axis, Double> playerPosition : playerPositions) {
-				synchronized (targetPositions) {
-					for (HashMap<Axis, Double> targetPosition : targetPositions) {
-						double x1 = playerPosition.get(Axis.X)
-								+ (SIZE_PLAYER / 2);
-						double y1 = playerPosition.get(Axis.Y)
-								+ (SIZE_PLAYER / 2);
-						double x2 = targetPosition.get(Axis.X)
-								+ (SIZE_TARGET / 2);
-						double y2 = targetPosition.get(Axis.Y)
-								+ (SIZE_TARGET / 2);
-						if (ComputerPlayersAdvisor.dist(x1, y1, x2, y2) < 1.1 * SIZE_TARGET) {
-							sphereCount[playerPositions.indexOf(playerPosition)]++;
-							targetPositions.remove(targetPosition);
-						}
-					}
+		for (HashMap<Axis, Double> playerPosition : playerPositions) {
+			for (HashMap<Axis, Double> targetPosition : targetPositions) {
+				double x1 = playerPosition.get(Axis.X) + (SIZE_PLAYER / 2);
+				double y1 = playerPosition.get(Axis.Y) + (SIZE_PLAYER / 2);
+				double x2 = targetPosition.get(Axis.X) + (SIZE_TARGET / 2);
+				double y2 = targetPosition.get(Axis.Y) + (SIZE_TARGET / 2);
+				if (ComputerPlayersAdvisor.dist(x1, y1, x2, y2) < 1.1 * SIZE_TARGET) {
+					sphereCount[playerPositions.indexOf(playerPosition)]++;
+					targetPositions.remove(targetPosition);
 				}
 			}
 		}
@@ -387,7 +369,7 @@ public class SphereGamePanel extends JPanel {
 	 * 
 	 * @return game end status
 	 */
-	public synchronized boolean endCondition() {
+	public boolean endCondition() {
 		return targetPositions.isEmpty();
 	}
 
@@ -395,8 +377,14 @@ public class SphereGamePanel extends JPanel {
 	 * Shuts down game operations. Shows an end game screen.
 	 */
 	private void quitGame() {
-		JDialog message = new JDialog();
-		message.setTitle("End of Sphere Game");
+		cpuTimer.stop();
+		repaintTimer.stop();
+		String message = "";
+		for (int i = 0; i < sphereCount.length; i++) 
+			message += "Player " + i + ": " + sphereCount[i] + "\n";
+		JOptionPane.showConfirmDialog(this, message, "End of Sphere Game",
+				JOptionPane.OK_OPTION, JOptionPane.INFORMATION_MESSAGE);
+		System.exit(0);
 	}
 
 	/**
@@ -407,14 +395,10 @@ public class SphereGamePanel extends JPanel {
 	 */
 	private void paintUpdate(Graphics g) {
 		// actual update loop
-		synchronized (playerPositions) {
-			for (int i = 0; i < playerPositions.size(); i++)
-				paintPlayer(g, i);
-		}
-		synchronized (targetPositions) {
-			for (int i = 0; i < targetPositions.size(); i++)
-				paintTarget(g, i);
-		}
+		for (int i = 0; i < playerPositions.size(); i++)
+			paintPlayer(g, i);
+		for (int i = 0; i < targetPositions.size(); i++)
+			paintTarget(g, i);
 	}
 
 	/**
@@ -427,13 +411,10 @@ public class SphereGamePanel extends JPanel {
 	 */
 	private void paintPlayer(Graphics g, int player) {
 		g.setColor(COLOR_PLAYER[player]);
-		int x, y, rx, ry;
-		synchronized (playerPositions) {
-			x = (int) Math.round(playerPositions.get(player).get(Axis.X));
-			y = (int) Math.round(playerPositions.get(player).get(Axis.Y));
-			rx = (int) Math.round(SIZE_PLAYER);
-			ry = (int) Math.round(SIZE_PLAYER);
-		}
+		int x = (int) Math.round(playerPositions.get(player).get(Axis.X));
+		int y = (int) Math.round(playerPositions.get(player).get(Axis.Y));
+		int rx = (int) Math.round(SIZE_PLAYER);
+		int ry = (int) Math.round(SIZE_PLAYER);
 		g.fillOval(x, y, rx, ry);
 	}
 
@@ -447,13 +428,10 @@ public class SphereGamePanel extends JPanel {
 	 */
 	private void paintTarget(Graphics g, int target) {
 		g.setColor(COLOR_TARGET);
-		int x, y, rx, ry;
-		synchronized (targetPositions) {
-			x = (int) Math.round(targetPositions.get(target).get(Axis.X));
-			y = (int) Math.round(targetPositions.get(target).get(Axis.Y));
-			rx = (int) Math.round(SIZE_TARGET);
-			ry = (int) Math.round(SIZE_TARGET);
-		}
+		int x = (int) Math.round(targetPositions.get(target).get(Axis.X));
+		int y = (int) Math.round(targetPositions.get(target).get(Axis.Y));
+		int rx = (int) Math.round(SIZE_TARGET);
+		int ry = (int) Math.round(SIZE_TARGET);
 		g.fillOval(x, y, rx, ry);
 	}
 
@@ -467,7 +445,7 @@ public class SphereGamePanel extends JPanel {
 	 * 
 	 * @return the players' positions
 	 */
-	public synchronized List<HashMap<Axis, Double>> getPlayerPositions() {
+	public List<HashMap<Axis, Double>> getPlayerPositions() {
 		return playerPositions;
 	}
 
@@ -476,7 +454,7 @@ public class SphereGamePanel extends JPanel {
 	 * 
 	 * @return the targets' positions
 	 */
-	public synchronized List<HashMap<Axis, Double>> getTargetPositions() {
+	public List<HashMap<Axis, Double>> getTargetPositions() {
 		return targetPositions;
 	}
 
@@ -485,7 +463,7 @@ public class SphereGamePanel extends JPanel {
 	 * 
 	 * @return number of players
 	 */
-	public synchronized int getNumberOfPlayers() {
+	public int getNumberOfPlayers() {
 		return playerPositions.size();
 	}
 

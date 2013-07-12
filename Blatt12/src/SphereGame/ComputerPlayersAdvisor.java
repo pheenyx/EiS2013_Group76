@@ -17,7 +17,7 @@ public class ComputerPlayersAdvisor implements ActionListener {
 	/**
 	 * Debugging flag.
 	 */
-	private boolean debug = false;
+	private static final boolean DEBUG_FLAG = false;
 
 	/**
 	 * The advice that's readily available as output. Note that this is advice
@@ -40,19 +40,6 @@ public class ComputerPlayersAdvisor implements ActionListener {
 	ComputerPlayersAdvisor(SphereGamePanel p) {
 		panel = p;
 		resetAdvice();
-	}
-
-	/**
-	 * Constructor that accepts a debug flag in addition to the game's panel.
-	 * 
-	 * @param panel
-	 *            game panel
-	 * @param debug
-	 *            debugging flag
-	 */
-	ComputerPlayersAdvisor(SphereGamePanel panel, boolean debug) {
-		this(panel);
-		this.debug = debug;
 	}
 
 	/**
@@ -85,34 +72,27 @@ public class ComputerPlayersAdvisor implements ActionListener {
 			double minDist = Double.MAX_VALUE;
 			HashMap<Axis, Double> currentTarget = null;
 			for (HashMap<Axis, Double> targetPosition : targetPositions) {
-				if (targetPosition.size() == 0)
-					continue;
 				double distance = dist(playerPosition.get(Axis.X),
 						playerPosition.get(Axis.Y), targetPosition.get(Axis.X),
 						targetPosition.get(Axis.Y));
 				if (distance < minDist) {
 					minDist = distance;
 					currentTarget = targetPosition;
-					if (debug)
+					if (DEBUG_FLAG)
 						System.out.println(minDist);
 				}
 			}
-			if (currentTarget == null)
-				continue;
 			for (Direction direction : Direction.values()) {
-				if (direction.getXDir() == Math.signum(currentTarget
-						.get(Axis.X)
-						- playerPosition.get(Axis.X)))
-					advice.get(playerPositions.indexOf(playerPosition)).put(
-							direction, true);
-				if (direction.getYDir() == Math.signum(currentTarget
-						.get(Axis.Y)
-						- playerPosition.get(Axis.Y)))
+				double dx = currentTarget.get(Axis.X)
+						- playerPosition.get(Axis.X);
+				double dy = currentTarget.get(Axis.Y)
+						- playerPosition.get(Axis.Y);
+				if ((direction.getXDir() == Math.signum(dx) && dx != 0)
+						|| (direction.getYDir() == Math.signum(dy)) && dy != 0)
 					advice.get(playerPositions.indexOf(playerPosition)).put(
 							direction, true);
 			}
 		}
-
 	}
 
 	/**

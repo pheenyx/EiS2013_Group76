@@ -20,14 +20,7 @@ public class SphereFrame extends JFrame {
 	/**
 	 * The default constructor.
 	 */
-	public SphereFrame(int millisToFrame) {
-		this(millisToFrame, false);
-	}
-
-	/**
-	 * Constructor that checks for debug flag.
-	 */
-	public SphereFrame(int millisToFrame, boolean debug) {
+	public SphereFrame() {
 		// JFrame with "Sphere Game" as title.
 		super("Sphere Game");
 		// Size of the screen.
@@ -41,7 +34,7 @@ public class SphereFrame extends JFrame {
 		// Sets a new GrisLayout.
 		getContentPane().setLayout(new GridLayout(1, 1));
 		// Set the field of the game in the Frame.
-		gamePanel = new SphereGamePanel(millisToFrame, debug);
+		gamePanel = new SphereGamePanel();
 		getContentPane().add(gamePanel);
 		// Makes the frame visible.
 		setVisible(true);

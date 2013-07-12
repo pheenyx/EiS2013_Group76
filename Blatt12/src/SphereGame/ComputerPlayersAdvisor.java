@@ -15,6 +15,11 @@ import java.util.List;
 public class ComputerPlayersAdvisor implements ActionListener {
 
 	/**
+	 * Debugging flag.
+	 */
+	private boolean debug = false;
+
+	/**
 	 * The advice that's readily available as output. Note that this is advice
 	 * for all computer players.
 	 */
@@ -25,11 +30,6 @@ public class ComputerPlayersAdvisor implements ActionListener {
 	 * possibly go wrong?
 	 */
 	private SphereGamePanel panel;
-
-	/**
-	 * Debugging flag.
-	 */
-	private boolean debug = false;
 
 	/**
 	 * Constructor that only takes the necessary game panel.
@@ -77,20 +77,22 @@ public class ComputerPlayersAdvisor implements ActionListener {
 	 */
 	public void actionPerformed(ActionEvent e) {
 		resetAdvice();
-		List<HashMap<Axis, Double>> playersPos = panel.getPlayerPositions();
-		List<HashMap<Axis, Double>> targetsPos = panel.getTargetPositions();
-		for (HashMap<Axis, Double> playerPos : playersPos) {
+		List<HashMap<Axis, Double>> playerPositions = panel
+				.getPlayerPositions();
+		List<HashMap<Axis, Double>> targetPositions = panel
+				.getTargetPositions();
+		for (HashMap<Axis, Double> playerPosition : playerPositions) {
 			double minDist = Double.MAX_VALUE;
 			HashMap<Axis, Double> currentTarget = null;
-			for (HashMap<Axis, Double> targetPos : targetsPos) {
-				if (targetPos.size() == 0)
+			for (HashMap<Axis, Double> targetPosition : targetPositions) {
+				if (targetPosition.size() == 0)
 					continue;
-				double distance = dist(playerPos.get(Axis.X), playerPos
-						.get(Axis.Y), targetPos.get(Axis.X), targetPos
-						.get(Axis.Y));
+				double distance = dist(playerPosition.get(Axis.X),
+						playerPosition.get(Axis.Y), targetPosition.get(Axis.X),
+						targetPosition.get(Axis.Y));
 				if (distance < minDist) {
 					minDist = distance;
-					currentTarget = targetPos;
+					currentTarget = targetPosition;
 					if (debug)
 						System.out.println(minDist);
 				}
@@ -100,14 +102,14 @@ public class ComputerPlayersAdvisor implements ActionListener {
 			for (Direction direction : Direction.values()) {
 				if (direction.getXDir() == Math.signum(currentTarget
 						.get(Axis.X)
-						- playerPos.get(Axis.X)))
-					advice.get(playersPos.indexOf(playerPos)).put(direction,
-							true);
+						- playerPosition.get(Axis.X)))
+					advice.get(playerPositions.indexOf(playerPosition)).put(
+							direction, true);
 				if (direction.getYDir() == Math.signum(currentTarget
 						.get(Axis.Y)
-						- playerPos.get(Axis.Y)))
-					advice.get(playersPos.indexOf(playerPos)).put(direction,
-							true);
+						- playerPosition.get(Axis.Y)))
+					advice.get(playerPositions.indexOf(playerPosition)).put(
+							direction, true);
 			}
 		}
 
@@ -140,7 +142,7 @@ public class ComputerPlayersAdvisor implements ActionListener {
 	 *            y coordinate of the second point
 	 * @return distance between the points
 	 */
-	private double dist(double x1, double y1, double x2, double y2) {
+	public static double dist(double x1, double y1, double x2, double y2) {
 		double x = x1 - x2;
 		double y = y1 - y2;
 		return Math.sqrt(x * x + y * y);

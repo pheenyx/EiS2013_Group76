@@ -79,7 +79,7 @@ public class SphereGamePanel extends JPanel {
 	/**
 	 * Number of balls to be caught
 	 */
-	private static final int NUMBER_TARGETS = 1;
+	private static final int NUMBER_TARGETS = 50;
 
 	/**
 	 * Player number (and thusly, color) ("who is the human player?")
@@ -379,6 +379,8 @@ public class SphereGamePanel extends JPanel {
 	private void quitGame() {
 		cpuTimer.stop();
 		repaintTimer.stop();
+		setVisible(false);
+		setEnabled(false);
 		String message = "";
 		for (int i = 0; i < sphereCount.length; i++) 
 			message += "Player " + i + ": " + sphereCount[i] + "\n";

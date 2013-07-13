@@ -1,0 +1,20 @@
+Blatt 12
+
+Aufgabe 1: 6/12
+a) 3/3
+b) 2/2
+c) 0/3 
+   fehlt
+d) 0/2
+   fehlt
+e) 0/1
+   Ja.. aber wie umgeht man das?
+f) 1/1
+   Joa geht auch, besser wären aber Locks!
+
+Aufgabe 2: 0/8
+   Nicht bearbeitet!
+
+Aufgabe 3: 10/10
+   sehr schön - bitte vorstellen!
+   
